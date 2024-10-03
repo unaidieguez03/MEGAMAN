@@ -9,10 +9,9 @@ JAVA_COMPILER     = javac
 JAVA_DEBUG_FLAGS  = -g
 SRC               = $(wildcard $(SOURCE_DIR)**/*.java)
 
-.PHONY: debug release clean run-debug run-release
+.PHONY: debug release clean-all clean run-debug run-release
 
 compile-release: dir-release
-	@echo $(SRC)
 	@$(JAVA_COMPILER) -d $(RELEASE_DIR) $(SRC)
 
 compile-degun: dir-debug 
@@ -23,15 +22,19 @@ dir-debug:
 
 dir-release: 	
 	@mkdir -p $(RELEASE_DIR)
-
 clean:
 	@rm -rf $(DEBUG_DIR) 
 	@rm -rf $(RELEASE_DIR) 
 
-run-debug:
+clean-all:clean
+	@rm -rf $(DEBUG_DIR) 
+	@rm -rf $(RELEASE_DIR) 
+	@rmdir $(BIN_DIR) 
+
+run-debug:clean compile-degun
 	@$(JAVA) -cp $(DEBUG_DIR) $(MAIN)
 
-run-release:
+run-release:clean compile-release
 	@$(JAVA) -cp $(RELEASE_DIR) $(MAIN)
 
 release: clean compile-release
