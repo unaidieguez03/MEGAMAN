@@ -117,20 +117,20 @@ public class TileManager {
 							gp.tileSize,
 							gp.tileSize, null);
 
-					g2.drawRect(screenX, screenY,
-							gp.tileSize,
-							gp.tileSize);
-					g2.setColor(Color.RED);
-					g2.drawString("[" + worldCol + "][" + worldRow + "]", screenX,
-							screenY + gp.tileSize / 2);
+//					g2.drawRect(screenX, screenY,
+//							gp.tileSize,
+//							gp.tileSize);
+//					g2.setColor(Color.RED);
+//					g2.drawString("[" + worldCol + "][" + worldRow + "]", screenX,
+//							screenY + gp.tileSize / 2);
 				} else {
 
-					g2.drawRect(screenX, screenY,
-							gp.tileSize,
-							gp.tileSize);
-					g2.setColor(Color.RED);
-					g2.drawString("[" + worldCol + "][" + worldRow + "]", screenX,
-							screenY + gp.tileSize / 2);
+//					g2.drawRect(screenX, screenY,
+//							gp.tileSize,
+//							gp.tileSize);
+//					g2.setColor(Color.RED);
+//					g2.drawString("[" + worldCol + "][" + worldRow + "]", screenX,
+//							screenY + gp.tileSize / 2);
 				}
 			}
 			worldCol++;

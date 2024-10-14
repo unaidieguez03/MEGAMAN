@@ -79,7 +79,7 @@ public class CollisionChequer {
 		int tileNum1, tileNum2;
 		switch (entity.direction) {
 			case UP:
-				entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
+				entityTopRow = (entityTopWorldY - (int)entity.speed) / gp.tileSize;
 				tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;
 				tileNum2 = gp.tileManager.mapTileNum[entityRightCol][entityTopRow].tileNum;
 				if (gp.tileManager.tiles.get(tileNum1).collisions.down == true
@@ -90,7 +90,7 @@ public class CollisionChequer {
 				}
 				break;
 			case LEFT:
-				entityLeftCol = (entityLeftWorldX - entity.solidArea.x - entity.speed) / gp.tileSize;
+				entityLeftCol = (entityLeftWorldX - entity.solidArea.x - (int)entity.speed) / gp.tileSize;
 				tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;
 				tileNum2 = gp.tileManager.mapTileNum[entityLeftCol][entityBottomRow].tileNum;
 				if (gp.tileManager.tiles.get(tileNum1).collisions.left == true
@@ -102,7 +102,7 @@ public class CollisionChequer {
 				}
 				break;
 			case RIGHT:
-				entityRightCol = (entityRightWorldX + entity.solidArea.x + entity.speed) / gp.tileSize;
+				entityRightCol = (entityRightWorldX + entity.solidArea.x + (int)entity.speed) / gp.tileSize;
 				tileNum1 = gp.tileManager.mapTileNum[entityRightCol][entityTopRow].tileNum;
 				tileNum2 = gp.tileManager.mapTileNum[entityRightCol][entityBottomRow].tileNum;
 				if (gp.tileManager.tiles.get(tileNum1).collisions.right == true

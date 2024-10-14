@@ -4,9 +4,10 @@ import java.awt.event.*;
 
 public class KeyHandler implements KeyListener {
 
-	public boolean spacePressed, upPressed, downPressed, leftPressed, rightPressed;
+	public boolean shiftPressed, spacePressed, upPressed, downPressed, leftPressed, rightPressed;
 
 	public KeyHandler() {
+		shiftPressed = false;
 		upPressed = false;
 		downPressed = false;
 		leftPressed = false;
@@ -16,6 +17,9 @@ public class KeyHandler implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch (e.getKeyCode()) {
+			case KeyEvent.VK_SHIFT:
+				shiftPressed = true;
+				break;
 			case KeyEvent.VK_SPACE:
 				spacePressed = true;
 				break;
@@ -37,6 +41,9 @@ public class KeyHandler implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		switch (e.getKeyCode()) {
+			case KeyEvent.VK_SHIFT:
+				shiftPressed = false;
+				break;
 			case KeyEvent.VK_SPACE:
 				spacePressed = false;
 				break;
@@ -96,5 +103,13 @@ public class KeyHandler implements KeyListener {
 
 	public void setSpacePressed(boolean spacePressed) {
 		this.spacePressed = spacePressed;
+	}
+
+	public boolean isShiftPressed() {
+		return shiftPressed;
+	}
+
+	public void setShiftPressed(boolean shiftPressed) {
+		this.shiftPressed = shiftPressed;
 	}
 }

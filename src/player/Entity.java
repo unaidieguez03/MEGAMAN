@@ -17,8 +17,8 @@ public class Entity {
 	BufferedImage img, up, down, left, right;
 	public int worldX, worldY;
 	public int solidDefoultX, solidDefoultY;
-	public int speed;
-
+	public double speed;
+	
 	public Direction direction;
 	public Direction lastDirection;
 
@@ -28,7 +28,8 @@ public class Entity {
 	public Rectangle solidArea;
 	public Collision collisions;
 
-	public boolean jumping;
+	public double defoultSpeed = 5;
+	public boolean jumping, stop;
 
 	public int screenX;
 	public int screenY;
@@ -110,7 +111,7 @@ public class Entity {
 		this.solidDefoultY = solidDefoultY;
 	}
 
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 

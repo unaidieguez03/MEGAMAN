@@ -24,7 +24,7 @@ public class Player extends Entity {
 		jumpSpeed = topSpeed;
 		jumping = false;
 		fallSpeed = 0;
-		inAir=true;
+		inAir = true;
 		this.gp = gp;
 		lastDirection = Direction.UP;
 		screenX = gp.screenWith / 2 - (gp.tileSize / 2);
@@ -53,7 +53,7 @@ public class Player extends Entity {
 	public void initValues() {
 		worldX = gp.tileSize * 23;
 		worldY = gp.tileSize * 21 - solidArea.y;
-		speed = 4;
+		speed = 0;
 		direction = Direction.STOP;
 	}
 
@@ -106,33 +106,61 @@ public class Player extends Entity {
 				if (onLand) {
 					this.setWorldY(worldY - (int) fallSpeed);
 					jumpSpeed = topSpeed;
-					onLand=false;
+					onLand = false;
 					fallSpeed = 0;
 					inAir = false;
 				}
 			}
 		}
-			
+
+	}
+
+	private double aproach(double goal, double current, double delta) {
+		if (current > goal + 0.1) {
+			return current - delta;
+		} else if (current < goal - 1) {
+			return current + delta;
+		} else {
+			return goal;
+		}
 	}
 
 	public void getDirectionInput() {
+		speed = keyH.isShiftPressed() && (direction == Direction.LEFT || direction == Direction.RIGHT)
+				? aproach(15, speed, 0.9)
+				: direction != Direction.STOP ? aproach(5, speed, 0.9) : speed;
 		if (keyH.isSpacePressed() && onLand == true) {
 			jumping = true;
 			inAir = true;
 		}
-		if (keyH.isUpPressed()) {
-			direction = Direction.UP;
-			lastDirection = direction;
-		} else if (keyH.isDownPressed()) {
-			direction = Direction.DOWN;
-			lastDirection = direction;
-		} else if (keyH.isLeftPressed()) {
+		if (keyH.isLeftPressed()) {
 			direction = Direction.LEFT;
 			lastDirection = direction;
+			stop = !collisions.left ? false : true;
 		} else if (keyH.isRightPressed()) {
 			direction = Direction.RIGHT;
 			lastDirection = direction;
+			stop = !collisions.right ? false : true;
 		} else {
+			speed = aproach(0, speed, 0.9);
+			stop = speed == 0 ? true : false;
+			if (stop != true) {
+				switch (lastDirection) {
+
+					case LEFT:
+						if (this.collisions.left != true) {
+							this.setWorldX(worldX -= speed);
+						}
+						break;
+					case RIGHT:
+						if (this.collisions.right != true) {
+							this.setWorldX(worldX += speed);
+						}
+						break;
+					default:
+						break;
+				}
+			}
 			direction = Direction.STOP;
 		}
 	}
@@ -152,6 +180,7 @@ public class Player extends Entity {
 				lastImg = right;
 				break;
 			case STOP:
+				lastImg = right;
 				break;
 			default:
 				break;
