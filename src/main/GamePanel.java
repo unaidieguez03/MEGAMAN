@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import javax.swing.JPanel;
 
 import player.Player;
+import tile.TileManager;
 
 public class GamePanel extends JPanel implements Runnable {
 	private static final int FPS = 60;
@@ -29,9 +30,10 @@ public class GamePanel extends JPanel implements Runnable {
 
 	public final int worldWith = tileSize * maxWorldCol;
 	public final int worldHeight = tileSize * maxWorldRow;
-KeyHandler keyH = new KeyHandler();
-
-	public Player player ;
+	KeyHandler keyH = new KeyHandler();
+	public CollisionChequer collisionChequer = new CollisionChequer(this);
+	public TileManager tileManager = new TileManager(this);
+	public Player player;
 
 	public GamePanel() {
 		try {
@@ -77,14 +79,17 @@ KeyHandler keyH = new KeyHandler();
 	}
 
 	private void update() {
-player.update();
+		player.update();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Toolkit.getDefaultToolkit().sync();
 		Graphics2D g2 = (Graphics2D) g;
+		tileManager.draw(g2);
 		player.draw(g2);
+		g.drawLine(screenWith/2, screenHeight, screenWith/2 , 0);
+		g.drawLine(screenWith, screenHeight/2, 0 , screenHeight/2);
 		g2.dispose();
 
 	}

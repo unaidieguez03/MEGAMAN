@@ -1,7 +1,9 @@
 package player;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,31 +14,49 @@ import javax.imageio.ImageIO;
 import main.*;
 
 public class Player extends Entity {
-	int screenX;
-	int screenY;
+	BufferedImage lastImg;
 	GamePanel gp;
 	KeyHandler keyH;
 
 	public Player(GamePanel gp, KeyHandler keyH) throws FileNotFoundException, IOException {
+		topSpeed = 20f;
+		airSpeed = topSpeed;
+		jumpSpeed = topSpeed;
+		jumping = false;
+		fallSpeed = 0;
+		inAir=true;
 		this.gp = gp;
+		lastDirection = Direction.UP;
 		screenX = gp.screenWith / 2 - (gp.tileSize / 2);
 		screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
 		this.keyH = keyH;
-		img = ImageIO.read(new FileInputStream("res/direction.png"));
+		img = ImageIO.read(new FileInputStream("res/tiles/floor.png"));
 		up = img;
-		right = Player.rotate(img);
-		down = Player.rotate(right);
-		left = Player.rotate(down);
+		right = img;
+		down = img;
+		left = img;
+		// right = Player.rotate(img);
+		// down = Player.rotate(right);
+		// left = Player.rotate(down);
 
-		// solidArea = new Rectangle();
-		// solidArea.x = 8;
-		// solidArea.y = 16;
-		// solidDefoultX = solidArea.x;
-		// solidDefoultY = solidArea.y;
-		// solidArea.width = 32;
-		// solidArea.height = 32;
+		solidArea = new Rectangle();
+		solidArea.x = 8;
+		solidArea.y = 8;
+		solidDefoultX = solidArea.x;
+		solidDefoultY = solidArea.y;
+		solidArea.width = 32;
+		solidArea.height = 32;
+		initValues();
 
 	}
+
+	public void initValues() {
+		worldX = gp.tileSize * 23;
+		worldY = gp.tileSize * 21 - solidArea.y;
+		speed = 4;
+		direction = Direction.STOP;
+	}
+
 	public static BufferedImage rotate(BufferedImage img) {
 
 		// Getting Dimensions of image
@@ -61,49 +81,62 @@ public class Player extends Entity {
 		return newImage;
 	}
 
-
 	public void update() {
+		getDirectionInput();
+		gp.collisionChequer.checkTile(this);
+		getCollision();
+	}
 
-		move();
+	public void getCollision() {
+		if (this.collisions.left != true && direction == Direction.LEFT) {
+			this.setWorldX(worldX -= speed);
+		}
+		if (this.collisions.right != true && direction == Direction.RIGHT) {
+			this.setWorldX(worldX += speed);
+		}
+		if (inAir) {
+			if (jumpSpeed >= 0 && jumping) {
+				jumpSpeed = jumpSpeed - grabity;
+				onLand = false;
+				this.setWorldY(worldY -= (int) jumpSpeed);
+			} else {
+				jumping = false;
+				fallSpeed = fallSpeed > topSpeed ? topSpeed : fallSpeed + grabity;
+				this.setWorldY(worldY += (int) fallSpeed);
+				if (onLand) {
+					this.setWorldY(worldY - (int) fallSpeed);
+					jumpSpeed = topSpeed;
+					onLand=false;
+					fallSpeed = 0;
+					inAir = false;
+				}
+			}
+		}
+			
 	}
 
 	public void getDirectionInput() {
+		if (keyH.isSpacePressed() && onLand == true) {
+			jumping = true;
+			inAir = true;
+		}
 		if (keyH.isUpPressed()) {
 			direction = Direction.UP;
+			lastDirection = direction;
 		} else if (keyH.isDownPressed()) {
 			direction = Direction.DOWN;
+			lastDirection = direction;
 		} else if (keyH.isLeftPressed()) {
 			direction = Direction.LEFT;
+			lastDirection = direction;
 		} else if (keyH.isRightPressed()) {
 			direction = Direction.RIGHT;
+			lastDirection = direction;
 		} else {
 			direction = Direction.STOP;
 		}
 	}
 
-	public void move() {
-		getDirectionInput();
-		switch (direction) {
-			case UP:
-				screenY -= 10;
-				break;
-			case DOWN:
-
-				screenY += 10;
-				break;
-			case LEFT:
-
-			//	screenX -= 10;
-				break;
-			case RIGHT:
-
-			//	screenX += 10;
-				break;
-			default:
-				break;
-		}
-	}
-	BufferedImage lastImg;
 	public void draw(Graphics g2) {
 		switch (direction) {
 			case UP:
@@ -124,5 +157,7 @@ public class Player extends Entity {
 				break;
 		}
 		g2.drawImage(lastImg, screenX, screenY, gp.tileSize, gp.tileSize, null);
+		g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
+		g2.setColor(Color.RED);
 	}
 }

@@ -89,4 +89,12 @@ public class KeyHandler implements KeyListener {
 	public void setRightPressed(boolean rightPressed) {
 		this.rightPressed = rightPressed;
 	}
+
+	public boolean isSpacePressed() {
+		return spacePressed;
+	}
+
+	public void setSpacePressed(boolean spacePressed) {
+		this.spacePressed = spacePressed;
+	}
 }
