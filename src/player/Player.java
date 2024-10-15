@@ -14,31 +14,30 @@ import javax.imageio.ImageIO;
 import main.*;
 
 public class Player extends Entity {
-	BufferedImage lastImg;
 	GamePanel gp;
 	KeyHandler keyH;
+	public int spriteSpeed = 8;
 
 	public Player(GamePanel gp, KeyHandler keyH) throws FileNotFoundException, IOException {
+		this.gp = gp;
+
 		topSpeed = 20f;
 		airSpeed = topSpeed;
 		jumpSpeed = topSpeed;
-		jumping = false;
 		fallSpeed = 0;
-		inAir = true;
-		this.gp = gp;
 		lastDirection = Direction.UP;
 		screenX = gp.screenWith / 2 - (gp.tileSize / 2);
-		screenY = gp.screenHeight / 2 - (gp.tileSize / 2);
+		screenY = (gp.screenHeight * 4 / 6) - (gp.tileSize / 2);
 		this.keyH = keyH;
-		img = ImageIO.read(new FileInputStream("res/tiles/floor.png"));
-		up = img;
-		right = img;
-		down = img;
-		left = img;
-		// right = Player.rotate(img);
-		// down = Player.rotate(right);
-		// left = Player.rotate(down);
-
+		img = ImageIO.read(new FileInputStream("res/player/player_standing.png"));
+		down_right = ImageIO.read(new FileInputStream("res/player/player_falling.png"));
+		down_left = mirrir(down_right);
+		up_right = ImageIO.read(new FileInputStream("res/player/player_jumping.png"));
+		up_left = mirrir(up_right);
+		right_1 = ImageIO.read(new FileInputStream("res/player/player_runing1.png"));
+		right_2 = ImageIO.read(new FileInputStream("res/player/player_runing.png"));
+		left_1 = mirrir(right_1);
+		left_2 = mirrir(right_2);
 		solidArea = new Rectangle();
 		solidArea.x = 8;
 		solidArea.y = 8;
@@ -55,6 +54,22 @@ public class Player extends Entity {
 		worldY = gp.tileSize * 21 - solidArea.y;
 		speed = 0;
 		direction = Direction.STOP;
+	}
+
+	private static BufferedImage mirrir(BufferedImage img) {
+		int height = img.getHeight();
+		int width = img.getWidth();
+		// Creating Buffered Image to store the output
+		BufferedImage res = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		for (int j = 0; j < height; j++) {
+			for (int i = 0, w = width - 1; i < width; i++, w--) {
+				int p = img.getRGB(i, j);
+				// set mirror image pixel value - both left and right
+				res.setRGB(w, j, p);
+			}
+		}
+		return res;
+
 	}
 
 	public static BufferedImage rotate(BufferedImage img) {
@@ -85,6 +100,31 @@ public class Player extends Entity {
 		getDirectionInput();
 		gp.collisionChequer.checkTile(this);
 		getCollision();
+		affectGravity();
+		spriteAnimation();
+	}
+
+	public void affectGravity() {
+		if (inAir) {
+			if (jumpSpeed >= 0 && jumping) {
+				jumpSpeed = jumpSpeed - grabity;
+				onLand = false;
+				jumping = true;
+				this.setWorldY(worldY -= (int) jumpSpeed);
+			} else {
+				fallSpeed = fallSpeed > topSpeed ? topSpeed : fallSpeed + grabity;
+				this.setWorldY(worldY += (int) fallSpeed);
+				if (onLand) {
+					this.setWorldY(worldY - (int) fallSpeed);
+
+					jumping = false;
+					jumpSpeed = topSpeed;
+					onLand = false;
+					fallSpeed = 0;
+					inAir = false;
+				}
+			}
+		}
 	}
 
 	public void getCollision() {
@@ -94,25 +134,23 @@ public class Player extends Entity {
 		if (this.collisions.right != true && direction == Direction.RIGHT) {
 			this.setWorldX(worldX += speed);
 		}
-		if (inAir) {
-			if (jumpSpeed >= 0 && jumping) {
-				jumpSpeed = jumpSpeed - grabity;
-				onLand = false;
-				this.setWorldY(worldY -= (int) jumpSpeed);
-			} else {
-				jumping = false;
-				fallSpeed = fallSpeed > topSpeed ? topSpeed : fallSpeed + grabity;
-				this.setWorldY(worldY += (int) fallSpeed);
-				if (onLand) {
-					this.setWorldY(worldY - (int) fallSpeed);
-					jumpSpeed = topSpeed;
-					onLand = false;
-					fallSpeed = 0;
-					inAir = false;
-				}
+		if (stop != true) {
+			switch (lastDirection) {
+
+				case LEFT:
+					if (this.collisions.left != true) {
+						this.setWorldX(worldX -= speed);
+					}
+					break;
+				case RIGHT:
+					if (this.collisions.right != true) {
+						this.setWorldX(worldX += speed);
+					}
+					break;
+				default:
+					break;
 			}
 		}
-
 	}
 
 	private double aproach(double goal, double current, double delta) {
@@ -126,9 +164,10 @@ public class Player extends Entity {
 	}
 
 	public void getDirectionInput() {
+		spriteSpeed = keyH.isShiftPressed() ? 4 : 8;
 		speed = keyH.isShiftPressed() && (direction == Direction.LEFT || direction == Direction.RIGHT)
 				? aproach(15, speed, 0.9)
-				: direction != Direction.STOP ? aproach(5, speed, 0.9) : speed;
+				: direction != Direction.STOP ? aproach(5, speed, 0.75) : speed;
 		if (keyH.isSpacePressed() && onLand == true) {
 			jumping = true;
 			inAir = true;
@@ -142,51 +181,83 @@ public class Player extends Entity {
 			lastDirection = direction;
 			stop = !collisions.right ? false : true;
 		} else {
-			speed = aproach(0, speed, 0.9);
+			speed = aproach(0, speed, 0.6);
 			stop = speed == 0 ? true : false;
-			if (stop != true) {
-				switch (lastDirection) {
-
-					case LEFT:
-						if (this.collisions.left != true) {
-							this.setWorldX(worldX -= speed);
-						}
-						break;
-					case RIGHT:
-						if (this.collisions.right != true) {
-							this.setWorldX(worldX += speed);
-						}
-						break;
-					default:
-						break;
-				}
-			}
 			direction = Direction.STOP;
+		}
+	}
+
+	public void spriteAnimation() {
+		spriteCounter++;
+		if (spriteCounter > spriteSpeed) {
+			if (spriteNum == 1) {
+				spriteNum = 0;
+
+			} else if (spriteNum == 0) {
+
+				spriteNum = 1;
+			}
+			spriteCounter = 0;
 		}
 	}
 
 	public void draw(Graphics g2) {
 		switch (direction) {
 			case UP:
-				lastImg = up;
+
 				break;
 			case DOWN:
-				lastImg = down;
 				break;
 			case LEFT:
-				lastImg = left;
+				if (spriteNum == 1) {
+					lastImg = left_1;
+				} else {
+					lastImg = left_2;
+				}
 				break;
 			case RIGHT:
-				lastImg = right;
+				if (spriteNum == 1) {
+					lastImg = right_1;
+				} else {
+					lastImg = right_2;
+				}
 				break;
 			case STOP:
-				lastImg = right;
+				lastImg = img;
 				break;
 			default:
 				break;
 		}
+		if (inAir) {
+			if (jumping) {
+				switch (direction) {
+					case LEFT:
+						lastImg = up_left;
+						break;
+
+					case RIGHT:
+						lastImg = up_right;
+						break;
+					default:
+						break;
+				}
+			} else {
+				switch (direction) {
+					case LEFT:
+						lastImg = down_left;
+						break;
+
+					case RIGHT:
+						lastImg = down_right;
+						break;
+					default:
+						break;
+				}
+			}
+		}
 		g2.drawImage(lastImg, screenX, screenY, gp.tileSize, gp.tileSize, null);
-		g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width, solidArea.height);
-		g2.setColor(Color.RED);
+		// g2.drawRect(screenX + solidArea.x, screenY + solidArea.y, solidArea.width,
+		// solidArea.height);
+		// g2.setColor(Color.RED);
 	}
 }

@@ -77,7 +77,7 @@ public class CollisionChequer {
 		int entityBottomRow = entityBottomWorldY / gp.tileSize;
 
 		int tileNum1, tileNum2;
-		switch (entity.direction) {
+		switch (entity.lastDirection) {
 			case UP:
 				entityTopRow = (entityTopWorldY - (int)entity.speed) / gp.tileSize;
 				tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;

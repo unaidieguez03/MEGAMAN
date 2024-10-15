@@ -6,17 +6,14 @@ import java.awt.image.BufferedImage;
 import main.Collision;
 
 public class Entity {
-
 	public enum Direction {
 		UP, DOWN, LEFT, RIGHT, STOP
 	};
-
 	static final double grabity = 0.8;
-	public boolean inAir, onLand;
+	public boolean inAir= true, onLand;
 	public double airSpeed = 0, fallSpeed = 0,jumpSpeed = 0, topSpeed = 0;
-	BufferedImage img, up, down, left, right;
+	BufferedImage lastImg, img, up_left, up_right, down_left, down_right, left_1, left_2, right_1, right_2;
 	public int worldX, worldY;
-	public int solidDefoultX, solidDefoultY;
 	public double speed;
 	
 	public Direction direction;
@@ -27,9 +24,10 @@ public class Entity {
 
 	public Rectangle solidArea;
 	public Collision collisions;
+	public int solidDefoultX, solidDefoultY;
 
 	public double defoultSpeed = 5;
-	public boolean jumping, stop;
+	public boolean jumping=false, falling= false, stop=true;
 
 	public int screenX;
 	public int screenY;
@@ -45,38 +43,6 @@ public class Entity {
 
 	public void setImg(BufferedImage img) {
 		this.img = img;
-	}
-
-	public BufferedImage getUp() {
-		return up;
-	}
-
-	public void setUp(BufferedImage up) {
-		this.up = up;
-	}
-
-	public BufferedImage getDown() {
-		return down;
-	}
-
-	public void setDown(BufferedImage down) {
-		this.down = down;
-	}
-
-	public BufferedImage getLeft() {
-		return left;
-	}
-
-	public void setLeft(BufferedImage left) {
-		this.left = left;
-	}
-
-	public BufferedImage getRight() {
-		return right;
-	}
-
-	public void setRight(BufferedImage right) {
-		this.right = right;
 	}
 
 	public int getWorldX() {
