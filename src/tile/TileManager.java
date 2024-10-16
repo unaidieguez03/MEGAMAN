@@ -94,16 +94,12 @@ public class TileManager {
 
 	public void draw(Graphics g2) {
 		int worldCol = 0, worldRow = 0;
-		g2.drawImage(background, 0 - gp.player.worldX / 7,
-				-100 - gp.player.worldY / 7, background.getWidth(), background.getHeight(),
-				null);
-		g2.drawImage(background, 0 - gp.player.worldX / 7 + background.getWidth(),
-				-100 - gp.player.worldY / 7, background.getWidth(), background.getHeight(),
-				null);
-
-		g2.drawImage(background, 0 - gp.player.worldX / 7 - background.getWidth(),
-				-100 - gp.player.worldY / 7, background.getWidth(), background.getHeight(),
-				null);
+		for (int i = 0; i < 7; i++) {
+			
+			g2.drawImage(background, 0 - gp.player.worldX / 7 + background.getWidth()*i,
+					-100 - gp.player.worldY / 7, background.getWidth(), background.getHeight(),
+					null);
+		}
 		while (worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
 			int worldX = worldCol * gp.tileSize;
 			int worldY = worldRow * gp.tileSize;
