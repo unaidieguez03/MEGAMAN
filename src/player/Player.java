@@ -111,13 +111,19 @@ public class Player extends Entity {
 				onLand = false;
 				jumping = true;
 				this.setWorldY(worldY -= (int) jumpSpeed);
+				if (this.collisions.up) {
+					jumping = false;
+					fallSpeed = jumpSpeed;
+				}
 			} else {
 				fallSpeed = fallSpeed > topSpeed ? topSpeed : fallSpeed + grabity;
+				jumping = false;
 				this.setWorldY(worldY += (int) fallSpeed);
 				if (onLand) {
-					this.setWorldY(worldY - (int) fallSpeed);
-
-					jumping = false;
+					System.out.println(this.worldY + " ostiaaa " + gp.collisionChequer.lastX);
+					System.out.println(gp.collisionChequer.lastX>this.worldY+gp.tileSize);
+					this.setWorldY(gp.collisionChequer.lastX+gp.tileSize<this.worldY?gp.collisionChequer.lastX+gp.tileSize:gp.collisionChequer.lastX);
+					System.out.println(this.worldY + " ostiaaa " + gp.collisionChequer.lastX);
 					jumpSpeed = topSpeed;
 					onLand = false;
 					fallSpeed = 0;
@@ -230,6 +236,7 @@ public class Player extends Entity {
 		}
 		if (inAir) {
 			if (jumping) {
+				System.out.println("jojooo");
 				switch (direction) {
 					case LEFT:
 						lastImg = up_left;

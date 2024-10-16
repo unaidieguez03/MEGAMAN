@@ -87,7 +87,6 @@ public class TileManager {
 			tiles.add(new Tile());
 			tiles.get(4).image = ImageIO.read(new FileInputStream("res/tiles/prob.png"));
 			tiles.get(4).collisions = new Collision(true, false, false, false);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

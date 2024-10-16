@@ -6,6 +6,7 @@ import player.*;
 
 public class CollisionChequer {
 	GamePanel gp;
+	public int lastX;
 
 	public CollisionChequer(GamePanel gp) {
 		this.gp = gp;
@@ -78,17 +79,6 @@ public class CollisionChequer {
 
 		int tileNum1, tileNum2;
 		switch (entity.lastDirection) {
-			case UP:
-				entityTopRow = (entityTopWorldY - (int)entity.speed) / gp.tileSize;
-				tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;
-				tileNum2 = gp.tileManager.mapTileNum[entityRightCol][entityTopRow].tileNum;
-				if (gp.tileManager.tiles.get(tileNum1).collisions.down == true
-						|| gp.tileManager.tiles.get(tileNum2).collisions.down == true) {
-					entity.collisions.up = true;
-				} else {
-					entity.collisions.up = false;
-				}
-				break;
 			case LEFT:
 				entityLeftCol = (entityLeftWorldX - entity.solidArea.x - (int)entity.speed) / gp.tileSize;
 				tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;
@@ -128,11 +118,25 @@ public class CollisionChequer {
 				|| gp.tileManager.tiles.get(tileNum2).collisions.up == true && entity.worldY+( gp.tileSize-1) < gp.tileManager.mapTileNum[entityLeftCol][entityBottomRow].y) {
 			entity.collisions.down = true;
 			entity.onLand = true;
+			lastX =  gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].y;//+gp.tileSize;
 			//System.out.println("onLand");
 		} else {
 			entity.inAir = true;
+			System.out.println("air");
+			//lastX =  gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].y +gp.tileSize;
 			//System.out.println("onAir"+entity.inAir);
 			entity.collisions.down = false;
+		}
+		entityTopRow = (entityTopWorldY - entity.solidArea.y + (int) entity.jumpSpeed) / gp.tileSize;
+		tileNum1 = gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].tileNum;
+		tileNum2 = gp.tileManager.mapTileNum[entityRightCol][entityTopRow].tileNum;
+		if (gp.tileManager.tiles.get(tileNum1).collisions.down == true
+				|| gp.tileManager.tiles.get(tileNum2).collisions.down == true) {
+			System.out.println("up");
+			entity.collisions.up = true;
+		} else {
+
+			entity.collisions.up = false;
 		}
 
 	}
