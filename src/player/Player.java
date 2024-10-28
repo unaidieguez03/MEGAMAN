@@ -1,6 +1,5 @@
 package player;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -20,24 +19,8 @@ public class Player extends Entity {
 
 	public Player(GamePanel gp, KeyHandler keyH) throws FileNotFoundException, IOException {
 		this.gp = gp;
-
-		topSpeed = 20f;
-		airSpeed = topSpeed;
-		jumpSpeed = topSpeed;
-		fallSpeed = 0;
-		lastDirection = Direction.UP;
-		screenX = gp.screenWith / 2 - (gp.tileSize / 2);
-		screenY = (gp.screenHeight * 4 / 6) - (gp.tileSize / 2);
 		this.keyH = keyH;
-		img = ImageIO.read(new FileInputStream("res/player/player_standing.png"));
-		down_right = ImageIO.read(new FileInputStream("res/player/player_falling.png"));
-		down_left = mirrir(down_right);
-		up_right = ImageIO.read(new FileInputStream("res/player/player_jumping.png"));
-		up_left = mirrir(up_right);
-		right_1 = ImageIO.read(new FileInputStream("res/player/player_runing1.png"));
-		right_2 = ImageIO.read(new FileInputStream("res/player/player_runing.png"));
-		left_1 = mirrir(right_1);
-		left_2 = mirrir(right_2);
+
 		solidArea = new Rectangle();
 		solidArea.x = 8;
 		solidArea.y = 8;
@@ -45,14 +28,37 @@ public class Player extends Entity {
 		solidDefoultY = solidArea.y;
 		solidArea.width = 32;
 		solidArea.height = 32;
-		initValues();
 
+		worldX = gp.tileSize * 23;
+		worldY = gp.tileSize * 21 - solidArea.y;
+		screenX = gp.screenWith / 2 - (gp.tileSize / 2);
+		screenY = (gp.screenHeight * 4 / 6) - (gp.tileSize / 2);
+
+		initValues();
 	}
 
 	public void initValues() {
-		worldX = gp.tileSize * 23;
-		worldY = gp.tileSize * 21 - solidArea.y;
+		topSpeed = 17f;
+		airSpeed = topSpeed;
+		jumpSpeed = topSpeed;
+		fallSpeed = 0;
 		speed = 0;
+		lastDirection = Direction.UP;
+		try {
+			img = ImageIO.read(new FileInputStream("res/player/player_standing.png"));
+			down_right = ImageIO.read(new FileInputStream("res/player/player_falling.png"));
+			down_left = mirrir(down_right);
+			up_right = ImageIO.read(new FileInputStream("res/player/player_jumping.png"));
+			up_left = mirrir(up_right);
+			right_1 = ImageIO.read(new FileInputStream("res/player/player_runing1.png"));
+			right_2 = ImageIO.read(new FileInputStream("res/player/player_runing.png"));
+			left_1 = mirrir(right_1);
+			left_2 = mirrir(right_2);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
 		direction = Direction.STOP;
 	}
 
@@ -72,7 +78,7 @@ public class Player extends Entity {
 
 	}
 
-	public static BufferedImage rotate(BufferedImage img) {
+	private static BufferedImage rotate(BufferedImage img) {
 
 		// Getting Dimensions of image
 		int width = img.getWidth();
@@ -120,10 +126,9 @@ public class Player extends Entity {
 				jumping = false;
 				this.setWorldY(worldY += (int) fallSpeed);
 				if (onLand) {
-					System.out.println(this.worldY + " ostiaaa " + gp.collisionChequer.lastX);
-					System.out.println(gp.collisionChequer.lastX>this.worldY+gp.tileSize);
-					this.setWorldY(gp.collisionChequer.lastX+gp.tileSize<this.worldY?gp.collisionChequer.lastX+gp.tileSize:gp.collisionChequer.lastX);
-					System.out.println(this.worldY + " ostiaaa " + gp.collisionChequer.lastX);
+					this.setWorldY(gp.collisionChequer.lastX + gp.tileSize < this.worldY
+							? gp.collisionChequer.lastX + gp.tileSize
+							: gp.collisionChequer.lastX);
 					jumpSpeed = topSpeed;
 					onLand = false;
 					fallSpeed = 0;
@@ -209,11 +214,6 @@ public class Player extends Entity {
 
 	public void draw(Graphics g2) {
 		switch (direction) {
-			case UP:
-
-				break;
-			case DOWN:
-				break;
 			case LEFT:
 				if (spriteNum == 1) {
 					lastImg = left_1;
@@ -236,7 +236,6 @@ public class Player extends Entity {
 		}
 		if (inAir) {
 			if (jumping) {
-				System.out.println("jojooo");
 				switch (direction) {
 					case LEFT:
 						lastImg = up_left;

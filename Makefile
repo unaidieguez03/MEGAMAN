@@ -31,10 +31,10 @@ clean-all:clean
 	@rm -rf $(RELEASE_DIR) 
 	@rmdir $(BIN_DIR) 
 
-run-debug:clean compile-degun
+run-debug:
 	@$(JAVA) -cp $(DEBUG_DIR) $(MAIN)
 
-run-release:clean compile-release
+run-release:
 	@$(JAVA) -cp $(RELEASE_DIR) $(MAIN)
 
 release: clean compile-release

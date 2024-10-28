@@ -122,7 +122,6 @@ public class CollisionChequer {
 			//System.out.println("onLand");
 		} else {
 			entity.inAir = true;
-			System.out.println("air");
 			//lastX =  gp.tileManager.mapTileNum[entityLeftCol][entityTopRow].y +gp.tileSize;
 			//System.out.println("onAir"+entity.inAir);
 			entity.collisions.down = false;
@@ -132,7 +131,6 @@ public class CollisionChequer {
 		tileNum2 = gp.tileManager.mapTileNum[entityRightCol][entityTopRow].tileNum;
 		if (gp.tileManager.tiles.get(tileNum1).collisions.down == true
 				|| gp.tileManager.tiles.get(tileNum2).collisions.down == true) {
-			System.out.println("up");
 			entity.collisions.up = true;
 		} else {
 
